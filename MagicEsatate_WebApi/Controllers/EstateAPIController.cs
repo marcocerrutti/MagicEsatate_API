@@ -1,4 +1,5 @@
 ﻿using MagicEsatate_WebApi.Data;
+using MagicEsatate_WebApi.Logging;
 using MagicEsatate_WebApi.Models;
 using MagicEsatate_WebApi.Models.Dto;
 using Microsoft.AspNetCore.JsonPatch;
@@ -11,8 +12,9 @@ namespace MagicEsatate_WebApi.Controllers
     [ApiController]
     public class EstateAPIController: ControllerBase
     {
-        private readonly ILogger<EstateAPIController> _logger;
-        public EstateAPIController(ILogger<EstateAPIController> logger)
+        private readonly ILogging _logger;
+
+        public EstateAPIController(ILogging logger)
         {
             _logger = logger;
         }
@@ -22,7 +24,7 @@ namespace MagicEsatate_WebApi.Controllers
         //using ActionResult you define the return type which in this case is EstateDTO
         public ActionResult<IEnumerable<EstateDTO>> GetEstates()
         {
-            _logger.LogInformation("Getting all estates");
+            _logger.Log("Getting all estates", "");
             return Ok( EstateStore.estateList);
             
         }
@@ -37,7 +39,7 @@ namespace MagicEsatate_WebApi.Controllers
         {
             if(id ==0)
             {
-                _logger.LogError("Get Villa Error with Id" + id);
+                _logger.Log("Get Estate Error with Id" + id, "error");
                 return BadRequest();
             }
             var estate = EstateStore.estateList.FirstOrDefault(u => u.Id == id);
