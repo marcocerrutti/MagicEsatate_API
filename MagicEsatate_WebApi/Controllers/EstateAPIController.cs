@@ -57,7 +57,7 @@ namespace MagicEsatate_WebApi.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
 
-        public ActionResult<EstateDTO> CreateEstate([FromBody]EstateDTO estateDTO)
+        public ActionResult<EstateDTO> CreateEstate([FromBody]EstateCreateDTO estateDTO)
         {
            /*
             if(!ModelState.IsValid)
@@ -75,16 +75,17 @@ namespace MagicEsatate_WebApi.Controllers
             {
                 return BadRequest(estateDTO);
             }
+            /*
             if(estateDTO.Id > 0)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
+            */
 
             Estate model = new()
             {
                 Amenity= estateDTO.Amenity,
                 Details= estateDTO.Details,
-                Id= estateDTO.Id,
                 ImageUrl = estateDTO.ImageUrl,
                 Name= estateDTO.Name,
                 Occupancy= estateDTO.Occupancy,
@@ -96,7 +97,7 @@ namespace MagicEsatate_WebApi.Controllers
             _db.SaveChanges();
 
             
-            return CreatedAtRoute("GetEstate", new { id = estateDTO.Id }, estateDTO);
+            return CreatedAtRoute("GetEstate", new { id = model.Id }, model);
         }
 
         [HttpDelete("{id:int}", Name = "DeleteEstate")]
@@ -123,7 +124,7 @@ namespace MagicEsatate_WebApi.Controllers
         [HttpPut("{id:int}", Name = "UpdateEstate")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult UpdateEstate(int id, [FromBody]EstateDTO estateDTO)
+        public IActionResult UpdateEstate(int id, [FromBody]EstateUpdateDTO estateDTO)
 
         {
             if(estateDTO == null || id != estateDTO.Id)
@@ -154,7 +155,7 @@ namespace MagicEsatate_WebApi.Controllers
         [HttpPatch("{id:int}", Name = "UpdatePartialEstate")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult UpdatePartialEstate(int id, JsonPatchDocument<EstateDTO> patchDTO)
+        public IActionResult UpdatePartialEstate(int id, JsonPatchDocument<EstateUpdateDTO> patchDTO)
         {
             if(patchDTO == null || id == 0)
             {
@@ -163,7 +164,7 @@ namespace MagicEsatate_WebApi.Controllers
             var estate = _db.Estates.AsNoTracking().FirstOrDefault(u => u.Id == id);
 
 
-            EstateDTO estateDTO = new()
+            EstateUpdateDTO estateDTO = new()
             {
                 Amenity = estate.Amenity,
                 Details = estate.Details,
