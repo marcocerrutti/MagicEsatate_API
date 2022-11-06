@@ -1,6 +1,8 @@
-﻿using MagicEsatate_WebApi.Data;
+﻿using AutoMapper;
+using MagicEsatate_WebApi.Data;
 using MagicEsatate_WebApi.Models;
 using MagicEsatate_WebApi.Models.Dto;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -14,11 +16,12 @@ namespace MagicEsatate_WebApi.Controllers
     [ApiController]
     public class EstateAPIController: ControllerBase
     {
-
+        private readonly IMapper _mapper;
         private readonly ApplcationDbContext _db;
-        public EstateAPIController(ApplcationDbContext db)
+        public EstateAPIController(ApplcationDbContext db, IMapper mapper)
         {
             _db = db;
+            _mapper = mapper;
         }
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -26,8 +29,8 @@ namespace MagicEsatate_WebApi.Controllers
         //using ActionResult you define the return type which in this case is EstateDTO
         public async Task<ActionResult<IEnumerable<EstateDTO>>> GetEstates()
         {
-            
-            return Ok(await _db.Estates.ToListAsync());
+            IEnumerable<Estate> estateList = await _db.Estates.ToListAsync();
+            return Ok(_mapper.Map<List<EstateDTO>>(estateList));
             
         }
        
@@ -49,7 +52,7 @@ namespace MagicEsatate_WebApi.Controllers
             {
                 return NotFound();
             }
-            return Ok(estate);
+            return Ok(_mapper.Map<EstateDTO>(estate));
 
         }
 
@@ -58,7 +61,7 @@ namespace MagicEsatate_WebApi.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
 
-        public async Task<ActionResult<EstateDTO>> CreateEstate([FromBody]EstateCreateDTO estateDTO)
+        public async Task<ActionResult<EstateDTO>> CreateEstate([FromBody]EstateCreateDTO createDTO)
         {
            /*
             if(!ModelState.IsValid)
@@ -67,14 +70,14 @@ namespace MagicEsatate_WebApi.Controllers
             }
             */
            //custom validation
-           if(await _db.Estates.FirstOrDefaultAsync(u => u.Name.ToLower()==estateDTO.Name.ToLower())!=null)
+           if(await _db.Estates.FirstOrDefaultAsync(u => u.Name.ToLower()== createDTO.Name.ToLower())!=null)
             {
                 ModelState.AddModelError("CustomError", "Estate already Exists!");
                 return BadRequest(ModelState);
             }
-            if(estateDTO== null)
+            if(createDTO== null)
             {
-                return BadRequest(estateDTO);
+                return BadRequest(createDTO);
             }
             /*
             if(estateDTO.Id > 0)
@@ -82,17 +85,19 @@ namespace MagicEsatate_WebApi.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
             */
+            //create the conversion
+            Estate model = _mapper.Map<Estate>(createDTO);
 
-            Estate model = new()
-            {
-                Amenity= estateDTO.Amenity,
-                Details= estateDTO.Details,
-                ImageUrl = estateDTO.ImageUrl,
-                Name= estateDTO.Name,
-                Occupancy= estateDTO.Occupancy,
-                Rate = estateDTO.Rate,
-                Sqft = estateDTO.Sqft
-            };
+            //Estate model = new()
+            //{
+            //    Amenity= createDTO.Amenity,
+            //    Details= createDTO.Details,
+            //    ImageUrl = createDTO.ImageUrl,
+            //    Name= createDTO.Name,
+            //    Occupancy= createDTO.Occupancy,
+            //    Rate = createDTO.Rate,
+            //    Sqft = createDTO.Sqft
+            //};
            
             await _db.Estates.AddAsync(model);
             await _db.SaveChangesAsync();
@@ -125,10 +130,10 @@ namespace MagicEsatate_WebApi.Controllers
         [HttpPut("{id:int}", Name = "UpdateEstate")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> UpdateEstate(int id, [FromBody]EstateUpdateDTO estateDTO)
+        public async Task<IActionResult> UpdateEstate(int id, [FromBody]EstateUpdateDTO updateDTO)
 
         {
-            if(estateDTO == null || id != estateDTO.Id)
+            if(updateDTO == null || id != updateDTO.Id)
             {
                 return BadRequest();
             }
@@ -137,17 +142,19 @@ namespace MagicEsatate_WebApi.Controllers
             //estate.Sqft = estateDTO.Sqft;
             //estate.Occupancy = estateDTO.Occupancy;
 
-            Estate model = new()
-            {
-                Amenity = estateDTO.Amenity,
-                Details = estateDTO.Details,
-                Id = estateDTO.Id,
-                ImageUrl = estateDTO.ImageUrl,
-                Name = estateDTO.Name,
-                Occupancy = estateDTO.Occupancy,
-                Rate = estateDTO.Rate,
-                Sqft = estateDTO.Sqft
-            };
+
+            Estate model = _mapper.Map<Estate>(updateDTO);
+            //Estate model = new()
+            //{
+            //    Amenity = updateDTO.Amenity,
+            //    Details = updateDTO.Details,
+            //    Id = updateDTO.Id,
+            //    ImageUrl = updateDTO.ImageUrl,
+            //    Name = updateDTO.Name,
+            //    Occupancy = updateDTO.Occupancy,
+            //    Rate = updateDTO.Rate,
+            //    Sqft = updateDTO.Sqft
+            //};
             _db.Estates.Update(model);
             await _db.SaveChangesAsync();
             return NoContent();
@@ -164,34 +171,39 @@ namespace MagicEsatate_WebApi.Controllers
             }
             var estate = await _db.Estates.AsNoTracking().FirstOrDefaultAsync(u => u.Id == id);
 
+            EstateUpdateDTO estateDTO = _mapper.Map<EstateUpdateDTO>(estate);
+            
+            //EstateUpdateDTO estateDTO = new()
+            //{
+            //    Amenity = estate.Amenity,
+            //    Details = estate.Details,
+            //    Id = estate.Id,
+            //    ImageUrl = estate.ImageUrl,
+            //    Name = estate.Name,
+            //    Occupancy = estate.Occupancy,
+            //    Rate = estate.Rate,
+            //    Sqft = estate.Sqft
+            //};
 
-            EstateUpdateDTO estateDTO = new()
-            {
-                Amenity = estate.Amenity,
-                Details = estate.Details,
-                Id = estate.Id,
-                ImageUrl = estate.ImageUrl,
-                Name = estate.Name,
-                Occupancy = estate.Occupancy,
-                Rate = estate.Rate,
-                Sqft = estate.Sqft
-            };
             if(estate == null)
             {
                 return BadRequest();
             }
             patchDTO.ApplyTo(estateDTO, ModelState);
-            Estate model = new Estate()
-            {
-                Amenity = estateDTO.Amenity,
-                Details = estateDTO.Details,
-                Id = estateDTO.Id,
-                ImageUrl = estateDTO.ImageUrl,
-                Name = estateDTO.Name,
-                Occupancy = estateDTO.Occupancy,
-                Rate = estateDTO.Rate,
-                Sqft = estateDTO.Sqft
-            };
+            Estate model = _mapper.Map<Estate>(estateDTO);
+            
+            //Estate model = new Estate()
+            //{
+            //    Amenity = estateDTO.Amenity,
+            //    Details = estateDTO.Details,
+            //    Id = estateDTO.Id,
+            //    ImageUrl = estateDTO.ImageUrl,
+            //    Name = estateDTO.Name,
+            //    Occupancy = estateDTO.Occupancy,
+            //    Rate = estateDTO.Rate,
+            //    Sqft = estateDTO.Sqft
+            //};
+
             _db.Estates.Update(model);
             await _db.SaveChangesAsync();
 
