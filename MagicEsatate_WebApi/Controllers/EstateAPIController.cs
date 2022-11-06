@@ -4,7 +4,8 @@ using MagicEsatate_WebApi.Models.Dto;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+
+
 
 namespace MagicEsatate_WebApi.Controllers
 {
@@ -23,10 +24,10 @@ namespace MagicEsatate_WebApi.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
 
         //using ActionResult you define the return type which in this case is EstateDTO
-        public ActionResult<IEnumerable<EstateDTO>> GetEstates()
+        public async Task<ActionResult<IEnumerable<EstateDTO>>> GetEstates()
         {
             
-            return Ok(_db.Estates);
+            return Ok(await _db.Estates.ToListAsync());
             
         }
        
@@ -36,14 +37,14 @@ namespace MagicEsatate_WebApi.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
        // [ProducesResponseType(200, Type = typeof(EstateDTO))]
        
-        public ActionResult<EstateDTO> GetEstates(int id)
+        public async Task<ActionResult<EstateDTO>> GetEstates(int id)
         {
             if(id ==0)
             {
                 
                 return BadRequest();
             }
-            var estate = _db.Estates.FirstOrDefault(u => u.Id == id);
+            var estate = await _db.Estates.FirstOrDefaultAsync(u => u.Id == id);
             if(estate == null)
             {
                 return NotFound();
@@ -57,7 +58,7 @@ namespace MagicEsatate_WebApi.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
 
-        public ActionResult<EstateDTO> CreateEstate([FromBody]EstateCreateDTO estateDTO)
+        public async Task<ActionResult<EstateDTO>> CreateEstate([FromBody]EstateCreateDTO estateDTO)
         {
            /*
             if(!ModelState.IsValid)
@@ -66,7 +67,7 @@ namespace MagicEsatate_WebApi.Controllers
             }
             */
            //custom validation
-           if(_db.Estates.FirstOrDefault(u => u.Name.ToLower()==estateDTO.Name.ToLower())!=null)
+           if(await _db.Estates.FirstOrDefaultAsync(u => u.Name.ToLower()==estateDTO.Name.ToLower())!=null)
             {
                 ModelState.AddModelError("CustomError", "Estate already Exists!");
                 return BadRequest(ModelState);
@@ -93,8 +94,8 @@ namespace MagicEsatate_WebApi.Controllers
                 Sqft = estateDTO.Sqft
             };
            
-            _db.Estates.Add(model);
-            _db.SaveChanges();
+            await _db.Estates.AddAsync(model);
+            await _db.SaveChangesAsync();
 
             
             return CreatedAtRoute("GetEstate", new { id = model.Id }, model);
@@ -104,27 +105,27 @@ namespace MagicEsatate_WebApi.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult DeleteEstate(int id)
+        public async Task<IActionResult> DeleteEstate(int id)
         {
             //Using IActionResult you do not define the return type
             if(id == 0)
             {
                 return BadRequest();
             }
-            var estate = _db.Estates.FirstOrDefault(u =>u.Id == id);
+            var estate =await _db.Estates.FirstOrDefaultAsync(u =>u.Id == id);
             if(estate == null)
             {
                 return NotFound();
             }
-            _db.Estates.Remove(estate);
-            _db.SaveChanges();
+             _db.Estates.Remove(estate);
+            await _db.SaveChangesAsync();
             return NoContent();
         }
 
         [HttpPut("{id:int}", Name = "UpdateEstate")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult UpdateEstate(int id, [FromBody]EstateUpdateDTO estateDTO)
+        public async Task<IActionResult> UpdateEstate(int id, [FromBody]EstateUpdateDTO estateDTO)
 
         {
             if(estateDTO == null || id != estateDTO.Id)
@@ -148,20 +149,20 @@ namespace MagicEsatate_WebApi.Controllers
                 Sqft = estateDTO.Sqft
             };
             _db.Estates.Update(model);
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
             return NoContent();
         }
 
         [HttpPatch("{id:int}", Name = "UpdatePartialEstate")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult UpdatePartialEstate(int id, JsonPatchDocument<EstateUpdateDTO> patchDTO)
+        public async Task<IActionResult> UpdatePartialEstate(int id, JsonPatchDocument<EstateUpdateDTO> patchDTO)
         {
             if(patchDTO == null || id == 0)
             {
                 return BadRequest();
             }
-            var estate = _db.Estates.AsNoTracking().FirstOrDefault(u => u.Id == id);
+            var estate = await _db.Estates.AsNoTracking().FirstOrDefaultAsync(u => u.Id == id);
 
 
             EstateUpdateDTO estateDTO = new()
@@ -192,7 +193,7 @@ namespace MagicEsatate_WebApi.Controllers
                 Sqft = estateDTO.Sqft
             };
             _db.Estates.Update(model);
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
 
             if(!ModelState.IsValid)
             {
