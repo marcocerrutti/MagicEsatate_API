@@ -2,6 +2,7 @@
 using MagicEsatate_WebApi.Data;
 using MagicEsatate_WebApi.Models;
 using MagicEsatate_WebApi.Models.Dto;
+using MagicEsatate_WebApi.Repository.IRepository;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -17,10 +18,10 @@ namespace MagicEsatate_WebApi.Controllers
     public class EstateAPIController: ControllerBase
     {
         private readonly IMapper _mapper;
-        private readonly ApplcationDbContext _db;
-        public EstateAPIController(ApplcationDbContext db, IMapper mapper)
+        private readonly IEstateRepository _dbEstate;
+        public EstateAPIController(IEstateRepository dbEstate, IMapper mapper)
         {
-            _db = db;
+            _dbEstate = dbEstate;
             _mapper = mapper;
         }
         [HttpGet]
@@ -29,7 +30,7 @@ namespace MagicEsatate_WebApi.Controllers
         //using ActionResult you define the return type which in this case is EstateDTO
         public async Task<ActionResult<IEnumerable<EstateDTO>>> GetEstates()
         {
-            IEnumerable<Estate> estateList = await _db.Estates.ToListAsync();
+            IEnumerable<Estate> estateList = await _dbEstate.GetAllAsync();
             return Ok(_mapper.Map<List<EstateDTO>>(estateList));
             
         }
@@ -47,7 +48,7 @@ namespace MagicEsatate_WebApi.Controllers
                 
                 return BadRequest();
             }
-            var estate = await _db.Estates.FirstOrDefaultAsync(u => u.Id == id);
+            var estate = await _dbEstate.GetAsync(u => u.Id == id);
             if(estate == null)
             {
                 return NotFound();
@@ -70,7 +71,7 @@ namespace MagicEsatate_WebApi.Controllers
             }
             */
            //custom validation
-           if(await _db.Estates.FirstOrDefaultAsync(u => u.Name.ToLower()== createDTO.Name.ToLower())!=null)
+           if(await _dbEstate.GetAsync(u => u.Name.ToLower()== createDTO.Name.ToLower())!=null)
             {
                 ModelState.AddModelError("CustomError", "Estate already Exists!");
                 return BadRequest(ModelState);
@@ -99,8 +100,7 @@ namespace MagicEsatate_WebApi.Controllers
             //    Sqft = createDTO.Sqft
             //};
            
-            await _db.Estates.AddAsync(model);
-            await _db.SaveChangesAsync();
+            await _dbEstate.CreateAsync(model);
 
             
             return CreatedAtRoute("GetEstate", new { id = model.Id }, model);
@@ -117,13 +117,12 @@ namespace MagicEsatate_WebApi.Controllers
             {
                 return BadRequest();
             }
-            var estate =await _db.Estates.FirstOrDefaultAsync(u =>u.Id == id);
+            var estate =await _dbEstate.GetAsync(u =>u.Id == id);
             if(estate == null)
             {
                 return NotFound();
             }
-             _db.Estates.Remove(estate);
-            await _db.SaveChangesAsync();
+            await _dbEstate.RemoveAsync(estate);
             return NoContent();
         }
 
@@ -155,8 +154,7 @@ namespace MagicEsatate_WebApi.Controllers
             //    Rate = updateDTO.Rate,
             //    Sqft = updateDTO.Sqft
             //};
-            _db.Estates.Update(model);
-            await _db.SaveChangesAsync();
+            await _dbEstate.UpdateAsync(model);
             return NoContent();
         }
 
@@ -169,7 +167,7 @@ namespace MagicEsatate_WebApi.Controllers
             {
                 return BadRequest();
             }
-            var estate = await _db.Estates.AsNoTracking().FirstOrDefaultAsync(u => u.Id == id);
+            var estate = await _dbEstate.GetAsync(u => u.Id == id, tracked:false);
 
             EstateUpdateDTO estateDTO = _mapper.Map<EstateUpdateDTO>(estate);
             
@@ -191,7 +189,7 @@ namespace MagicEsatate_WebApi.Controllers
             }
             patchDTO.ApplyTo(estateDTO, ModelState);
             Estate model = _mapper.Map<Estate>(estateDTO);
-            
+
             //Estate model = new Estate()
             //{
             //    Amenity = estateDTO.Amenity,
@@ -204,8 +202,7 @@ namespace MagicEsatate_WebApi.Controllers
             //    Sqft = estateDTO.Sqft
             //};
 
-            _db.Estates.Update(model);
-            await _db.SaveChangesAsync();
+            await _dbEstate.UpdateAsync(model);
 
             if(!ModelState.IsValid)
             {

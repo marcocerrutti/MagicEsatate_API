@@ -3,13 +3,10 @@ using System.Linq.Expressions;
 
 namespace MagicEsatate_WebApi.Repository.IRepository
 {
-    public interface IEstateRepository
+    public interface IEstateRepository: IRepository<Estate>
     {
-        Task<List<Estate>> GetAll(Expression<Func<Estate, bool>> filter  = null);
-        Task <Estate> Get(Expression<Func<Estate, bool>> filter = null, bool tracked=true);
-        Task Create(Estate entity);
-        Task Remove(Estate entity);
-        Task Save();
+        Task<Estate> UpdateAsync(Estate entity);
+     
 
     }
 }
