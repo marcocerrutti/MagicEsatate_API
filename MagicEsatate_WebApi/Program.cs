@@ -1,10 +1,16 @@
-using MagicEsatate_WebApi.Logging;
+
+using MagicEsatate_WebApi.Data;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
+builder.Services.AddDbContext<ApplcationDbContext>(option =>
+{
+    option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultSQLConnection"));
+});
 //Log.Logger = new LoggerConfiguration().MinimumLevel.Debug()
  //   .WriteTo.File("log/estateLogs.txt", rollingInterval:RollingInterval.Day).CreateLogger();
 
@@ -17,7 +23,7 @@ builder.Services.AddControllers(option =>
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddSingleton<ILogging, LoggingV2>();
+
 
 var app = builder.Build();
 

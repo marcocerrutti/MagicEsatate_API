@@ -1,9 +1,10 @@
 ﻿using MagicEsatate_WebApi.Data;
-using MagicEsatate_WebApi.Logging;
 using MagicEsatate_WebApi.Models;
 using MagicEsatate_WebApi.Models.Dto;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace MagicEsatate_WebApi.Controllers
 {
@@ -12,11 +13,11 @@ namespace MagicEsatate_WebApi.Controllers
     [ApiController]
     public class EstateAPIController: ControllerBase
     {
-        private readonly ILogging _logger;
 
-        public EstateAPIController(ILogging logger)
+        private readonly ApplcationDbContext _db;
+        public EstateAPIController(ApplcationDbContext db)
         {
-            _logger = logger;
+            _db = db;
         }
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -24,8 +25,8 @@ namespace MagicEsatate_WebApi.Controllers
         //using ActionResult you define the return type which in this case is EstateDTO
         public ActionResult<IEnumerable<EstateDTO>> GetEstates()
         {
-            _logger.Log("Getting all estates", "");
-            return Ok( EstateStore.estateList);
+            
+            return Ok(_db.Estates);
             
         }
        
@@ -39,10 +40,10 @@ namespace MagicEsatate_WebApi.Controllers
         {
             if(id ==0)
             {
-                _logger.Log("Get Estate Error with Id" + id, "error");
+                
                 return BadRequest();
             }
-            var estate = EstateStore.estateList.FirstOrDefault(u => u.Id == id);
+            var estate = _db.Estates.FirstOrDefault(u => u.Id == id);
             if(estate == null)
             {
                 return NotFound();
@@ -65,7 +66,7 @@ namespace MagicEsatate_WebApi.Controllers
             }
             */
            //custom validation
-           if(EstateStore.estateList.FirstOrDefault(u => u.Name.ToLower()==estateDTO.Name.ToLower())!=null)
+           if(_db.Estates.FirstOrDefault(u => u.Name.ToLower()==estateDTO.Name.ToLower())!=null)
             {
                 ModelState.AddModelError("CustomError", "Estate already Exists!");
                 return BadRequest(ModelState);
@@ -78,8 +79,22 @@ namespace MagicEsatate_WebApi.Controllers
             {
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
-            estateDTO.Id = EstateStore.estateList.OrderByDescending(u=>u.Id).FirstOrDefault().Id + 1;
-            EstateStore.estateList.Add(estateDTO);
+
+            Estate model = new()
+            {
+                Amenity= estateDTO.Amenity,
+                Details= estateDTO.Details,
+                Id= estateDTO.Id,
+                ImageUrl = estateDTO.ImageUrl,
+                Name= estateDTO.Name,
+                Occupancy= estateDTO.Occupancy,
+                Rate = estateDTO.Rate,
+                Sqft = estateDTO.Sqft
+            };
+           
+            _db.Estates.Add(model);
+            _db.SaveChanges();
+
             
             return CreatedAtRoute("GetEstate", new { id = estateDTO.Id }, estateDTO);
         }
@@ -95,12 +110,13 @@ namespace MagicEsatate_WebApi.Controllers
             {
                 return BadRequest();
             }
-            var estate = EstateStore.estateList.FirstOrDefault(u =>u.Id == id);
+            var estate = _db.Estates.FirstOrDefault(u =>u.Id == id);
             if(estate == null)
             {
                 return NotFound();
             }
-            EstateStore.estateList.Remove(estate);
+            _db.Estates.Remove(estate);
+            _db.SaveChanges();
             return NoContent();
         }
 
@@ -114,11 +130,24 @@ namespace MagicEsatate_WebApi.Controllers
             {
                 return BadRequest();
             }
-            var estate = EstateStore.estateList.FirstOrDefault(u => u.Id == id);
-            estate.Name = estateDTO.Name;
-            estate.Sqft = estateDTO.Sqft;
-            estate.Occupancy = estateDTO.Occupancy;
+            //var estate = EstateStore.estateList.FirstOrDefault(u => u.Id == id);
+            //estate.Name = estateDTO.Name;
+            //estate.Sqft = estateDTO.Sqft;
+            //estate.Occupancy = estateDTO.Occupancy;
 
+            Estate model = new()
+            {
+                Amenity = estateDTO.Amenity,
+                Details = estateDTO.Details,
+                Id = estateDTO.Id,
+                ImageUrl = estateDTO.ImageUrl,
+                Name = estateDTO.Name,
+                Occupancy = estateDTO.Occupancy,
+                Rate = estateDTO.Rate,
+                Sqft = estateDTO.Sqft
+            };
+            _db.Estates.Update(model);
+            _db.SaveChanges();
             return NoContent();
         }
 
@@ -131,12 +160,39 @@ namespace MagicEsatate_WebApi.Controllers
             {
                 return BadRequest();
             }
-            var estate = EstateStore.estateList.FirstOrDefault(u => u.Id == id);
+            var estate = _db.Estates.AsNoTracking().FirstOrDefault(u => u.Id == id);
+
+
+            EstateDTO estateDTO = new()
+            {
+                Amenity = estate.Amenity,
+                Details = estate.Details,
+                Id = estate.Id,
+                ImageUrl = estate.ImageUrl,
+                Name = estate.Name,
+                Occupancy = estate.Occupancy,
+                Rate = estate.Rate,
+                Sqft = estate.Sqft
+            };
             if(estate == null)
             {
                 return BadRequest();
             }
-            patchDTO.ApplyTo(estate, ModelState);
+            patchDTO.ApplyTo(estateDTO, ModelState);
+            Estate model = new Estate()
+            {
+                Amenity = estateDTO.Amenity,
+                Details = estateDTO.Details,
+                Id = estateDTO.Id,
+                ImageUrl = estateDTO.ImageUrl,
+                Name = estateDTO.Name,
+                Occupancy = estateDTO.Occupancy,
+                Rate = estateDTO.Rate,
+                Sqft = estateDTO.Sqft
+            };
+            _db.Estates.Update(model);
+            _db.SaveChanges();
+
             if(!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
