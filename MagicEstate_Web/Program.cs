@@ -1,10 +1,15 @@
 using MagicEsatate_Web;
+using MagicEstate_Web.Services.IService;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddAutoMapper(typeof(MappingConfig));
+
+builder.Services.AddHttpClient<IEstateService, IEstateService>();
+builder.Services.AddScoped<IEstateService, IEstateService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
