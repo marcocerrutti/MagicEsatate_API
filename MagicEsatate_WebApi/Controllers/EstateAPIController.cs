@@ -7,8 +7,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-
-
+using System.Net;
 
 namespace MagicEsatate_WebApi.Controllers
 {
@@ -17,22 +16,37 @@ namespace MagicEsatate_WebApi.Controllers
     [ApiController]
     public class EstateAPIController: ControllerBase
     {
+        protected APIResponse _response;
         private readonly IMapper _mapper;
         private readonly IEstateRepository _dbEstate;
         public EstateAPIController(IEstateRepository dbEstate, IMapper mapper)
         {
             _dbEstate = dbEstate;
             _mapper = mapper;
+            this._response = new();
         }
+        
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
 
         //using ActionResult you define the return type which in this case is EstateDTO
-        public async Task<ActionResult<IEnumerable<EstateDTO>>> GetEstates()
+        public async Task<ActionResult<APIResponse>> GetEstates()
         {
-            IEnumerable<Estate> estateList = await _dbEstate.GetAllAsync();
-            return Ok(_mapper.Map<List<EstateDTO>>(estateList));
-            
+            try
+            {
+
+
+                IEnumerable<Estate> estateList = await _dbEstate.GetAllAsync();
+                _response.Result = _mapper.Map<List<EstateDTO>>(estateList);
+                _response.StatusCode = HttpStatusCode.OK;
+                return Ok(_response);
+            }
+            catch(Exception ex)
+            {
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string>() { ex.ToString() };
+            }
+            return _response;
         }
        
         [HttpGet("{id:int}", Name ="GetEstate")]
@@ -41,19 +55,33 @@ namespace MagicEsatate_WebApi.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
        // [ProducesResponseType(200, Type = typeof(EstateDTO))]
        
-        public async Task<ActionResult<EstateDTO>> GetEstates(int id)
+        public async Task<ActionResult<APIResponse>> GetEstates(int id)
         {
-            if(id ==0)
+            try
             {
-                
-                return BadRequest();
-            }
-            var estate = await _dbEstate.GetAsync(u => u.Id == id);
-            if(estate == null)
+
+            
+                if(id ==0)
+                {
+                       _response.StatusCode = HttpStatusCode.BadRequest;
+                        return BadRequest(_response);
+                }
+                var estate = await _dbEstate.GetAsync(u => u.Id == id);
+                if(estate == null)
+                {
+                    _response.StatusCode = HttpStatusCode.BadRequest;
+                    return NotFound(_response);
+                }
+                _response.Result = _mapper.Map<EstateDTO>(estate);
+                _response.StatusCode = HttpStatusCode.OK;
+                return Ok(_response);
+                }
+             catch (Exception ex)
             {
-                return NotFound();
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string>() { ex.ToString() };
             }
-            return Ok(_mapper.Map<EstateDTO>(estate));
+            return _response;
 
         }
 
@@ -62,8 +90,12 @@ namespace MagicEsatate_WebApi.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
 
-        public async Task<ActionResult<EstateDTO>> CreateEstate([FromBody]EstateCreateDTO createDTO)
+        public async Task<ActionResult<APIResponse>> CreateEstate([FromBody]EstateCreateDTO createDTO)
         {
+            try
+            {
+
+            
            /*
             if(!ModelState.IsValid)
             {
@@ -87,7 +119,7 @@ namespace MagicEsatate_WebApi.Controllers
             }
             */
             //create the conversion
-            Estate model = _mapper.Map<Estate>(createDTO);
+            Estate estate = _mapper.Map<Estate>(createDTO);
 
             //Estate model = new()
             //{
@@ -100,18 +132,29 @@ namespace MagicEsatate_WebApi.Controllers
             //    Sqft = createDTO.Sqft
             //};
            
-            await _dbEstate.CreateAsync(model);
-
-            
-            return CreatedAtRoute("GetEstate", new { id = model.Id }, model);
+            await _dbEstate.CreateAsync(estate);
+            _response.Result = _mapper.Map<EstateDTO>(estate);
+            _response.StatusCode = HttpStatusCode.Created;
+            return CreatedAtRoute("GetEstate", new { id = estate.Id }, _response);
+            }
+            catch (Exception ex)
+            {
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string>() { ex.ToString() };
+            }
+            return _response;
         }
 
         [HttpDelete("{id:int}", Name = "DeleteEstate")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> DeleteEstate(int id)
+        public async Task<ActionResult<APIResponse>> DeleteEstate(int id)
         {
+            try
+            {
+
+            
             //Using IActionResult you do not define the return type
             if(id == 0)
             {
@@ -123,15 +166,27 @@ namespace MagicEsatate_WebApi.Controllers
                 return NotFound();
             }
             await _dbEstate.RemoveAsync(estate);
-            return NoContent();
+            _response.StatusCode = HttpStatusCode.NoContent;
+            _response.IsSuccess = true;
+            return Ok(_response);
+            }
+            catch (Exception ex)
+            {
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string>() { ex.ToString() };
+            }
+            return _response;
         }
 
         [HttpPut("{id:int}", Name = "UpdateEstate")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> UpdateEstate(int id, [FromBody]EstateUpdateDTO updateDTO)
-
+        public async Task<ActionResult<APIResponse>> UpdateEstate(int id, [FromBody]EstateUpdateDTO updateDTO)
         {
+            try
+            {
+
+            
             if(updateDTO == null || id != updateDTO.Id)
             {
                 return BadRequest();
@@ -155,7 +210,16 @@ namespace MagicEsatate_WebApi.Controllers
             //    Sqft = updateDTO.Sqft
             //};
             await _dbEstate.UpdateAsync(model);
-            return NoContent();
+            _response.StatusCode = HttpStatusCode.NoContent;
+            _response.IsSuccess = true;
+            return Ok(_response);
+            }
+            catch (Exception ex)
+            {
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string>() { ex.ToString() };
+            }
+            return _response;
         }
 
         [HttpPatch("{id:int}", Name = "UpdatePartialEstate")]

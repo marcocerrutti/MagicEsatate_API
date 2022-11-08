@@ -4,6 +4,7 @@ using MagicEsatate_WebApi.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MagicEsatateWebApi.Migrations
 {
     [DbContext(typeof(ApplcationDbContext))]
-    partial class ApplcationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221107185930_AddEstateNumberToDb")]
+    partial class AddEstateNumberToDb
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -70,7 +73,7 @@ namespace MagicEsatateWebApi.Migrations
                         {
                             Id = 1,
                             Amenity = "",
-                            CreateDate = new DateTime(2022, 11, 8, 10, 39, 16, 723, DateTimeKind.Local).AddTicks(5736),
+                            CreateDate = new DateTime(2022, 11, 7, 19, 59, 28, 466, DateTimeKind.Local).AddTicks(3936),
                             Details = "Fusce 11 tincidunt maximus leo, sed scelerisque massa auctor sit amet. Donec ex mauris, hendrerit quis nibh ac, efficitur fringilla enim.",
                             ImageUrl = "https://dotnetmasteryimages.blob.core.windows.net/bluevillaimages/villa3.jpg",
                             Name = "Royal Villa",
@@ -83,7 +86,7 @@ namespace MagicEsatateWebApi.Migrations
                         {
                             Id = 2,
                             Amenity = "",
-                            CreateDate = new DateTime(2022, 11, 8, 10, 39, 16, 723, DateTimeKind.Local).AddTicks(5750),
+                            CreateDate = new DateTime(2022, 11, 7, 19, 59, 28, 466, DateTimeKind.Local).AddTicks(3954),
                             Details = "Fusce 11 tincidunt maximus leo, sed scelerisque massa auctor sit amet. Donec ex mauris, hendrerit quis nibh ac, efficitur fringilla enim.",
                             ImageUrl = "https://dotnetmasteryimages.blob.core.windows.net/bluevillaimages/villa1.jpg",
                             Name = "Premium Pool Villa",
@@ -96,7 +99,7 @@ namespace MagicEsatateWebApi.Migrations
                         {
                             Id = 3,
                             Amenity = "",
-                            CreateDate = new DateTime(2022, 11, 8, 10, 39, 16, 723, DateTimeKind.Local).AddTicks(5752),
+                            CreateDate = new DateTime(2022, 11, 7, 19, 59, 28, 466, DateTimeKind.Local).AddTicks(3956),
                             Details = "Fusce 11 tincidunt maximus leo, sed scelerisque massa auctor sit amet. Donec ex mauris, hendrerit quis nibh ac, efficitur fringilla enim.",
                             ImageUrl = "https://dotnetmasteryimages.blob.core.windows.net/bluevillaimages/villa4.jpg",
                             Name = "Luxury Pool Villa",
@@ -109,7 +112,7 @@ namespace MagicEsatateWebApi.Migrations
                         {
                             Id = 4,
                             Amenity = "",
-                            CreateDate = new DateTime(2022, 11, 8, 10, 39, 16, 723, DateTimeKind.Local).AddTicks(5754),
+                            CreateDate = new DateTime(2022, 11, 7, 19, 59, 28, 466, DateTimeKind.Local).AddTicks(3957),
                             Details = "Fusce 11 tincidunt maximus leo, sed scelerisque massa auctor sit amet. Donec ex mauris, hendrerit quis nibh ac, efficitur fringilla enim.",
                             ImageUrl = "https://dotnetmasteryimages.blob.core.windows.net/bluevillaimages/villa5.jpg",
                             Name = "Diamond Villa",
@@ -122,7 +125,7 @@ namespace MagicEsatateWebApi.Migrations
                         {
                             Id = 5,
                             Amenity = "",
-                            CreateDate = new DateTime(2022, 11, 8, 10, 39, 16, 723, DateTimeKind.Local).AddTicks(5756),
+                            CreateDate = new DateTime(2022, 11, 7, 19, 59, 28, 466, DateTimeKind.Local).AddTicks(3959),
                             Details = "Fusce 11 tincidunt maximus leo, sed scelerisque massa auctor sit amet. Donec ex mauris, hendrerit quis nibh ac, efficitur fringilla enim.",
                             ImageUrl = "https://dotnetmasteryimages.blob.core.windows.net/bluevillaimages/villa2.jpg",
                             Name = "Diamond Pool Villa",
@@ -141,9 +144,6 @@ namespace MagicEsatateWebApi.Migrations
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("EstateID")
-                        .HasColumnType("int");
-
                     b.Property<string>("SpecialDetails")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -153,20 +153,7 @@ namespace MagicEsatateWebApi.Migrations
 
                     b.HasKey("EstateNo");
 
-                    b.HasIndex("EstateID");
-
                     b.ToTable("EstateNumbers");
-                });
-
-            modelBuilder.Entity("MagicEsatate_WebApi.Models.EstateNumber", b =>
-                {
-                    b.HasOne("MagicEsatate_WebApi.Models.Estate", "Estate")
-                        .WithMany()
-                        .HasForeignKey("EstateID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Estate");
                 });
 #pragma warning restore 612, 618
         }

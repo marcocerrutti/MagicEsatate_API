@@ -4,6 +4,7 @@ using MagicEsatate_WebApi.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MagicEsatateWebApi.Migrations
 {
     [DbContext(typeof(ApplcationDbContext))]
-    partial class ApplcationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221108093916_AddForeignKeyToEstateTable")]
+    partial class AddForeignKeyToEstateTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -13,6 +13,8 @@ namespace MagicEsatate_WebApi.Data
 
         public DbSet<Estate> Estates { get; set; }
 
+        public DbSet<EstateNumber> EstateNumbers { get; set; }
+
         //seed data to the database
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

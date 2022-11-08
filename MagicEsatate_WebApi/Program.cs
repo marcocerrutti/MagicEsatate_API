@@ -16,6 +16,7 @@ builder.Services.AddDbContext<ApplcationDbContext>(option =>
     option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultSQLConnection"));
 });
 builder.Services.AddScoped<IEstateRepository, EstateRepository>();
+builder.Services.AddScoped<IEstateNumberRepository, EstateNumberRepository>();
 builder.Services.AddAutoMapper(typeof(MappingConfig));
 //Log.Logger = new LoggerConfiguration().MinimumLevel.Debug()
  //   .WriteTo.File("log/estateLogs.txt", rollingInterval:RollingInterval.Day).CreateLogger();
