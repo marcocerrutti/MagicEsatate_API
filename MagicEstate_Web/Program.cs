@@ -1,5 +1,6 @@
 using MagicEsatate_Web;
 using MagicEstate_Web.Services.IService;
+using MagicEstate_Web.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,8 +8,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddAutoMapper(typeof(MappingConfig));
 
-builder.Services.AddHttpClient<IEstateService, IEstateService>();
-builder.Services.AddScoped<IEstateService, IEstateService>();
+builder.Services.AddHttpClient<IEstateService, EstateService>();
+builder.Services.AddScoped<IEstateService, EstateService>();
 
 var app = builder.Build();
 
