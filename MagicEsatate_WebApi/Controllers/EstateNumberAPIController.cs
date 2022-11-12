@@ -38,7 +38,7 @@ namespace MagicEsatate_WebApi.Controllers
             {
 
 
-                IEnumerable<EstateNumber> estateNumberList = await _dbEstateNumber.GetAllAsync();
+                IEnumerable<EstateNumber> estateNumberList = await _dbEstateNumber.GetAllAsync(includeProperties:"Estate");
                 _response.Result = _mapper.Map<List<EstateNumberDTO>>(estateNumberList);
                 _response.StatusCode = HttpStatusCode.OK;
                 return Ok(_response);
