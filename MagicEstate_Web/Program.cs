@@ -11,6 +11,9 @@ builder.Services.AddAutoMapper(typeof(MappingConfig));
 builder.Services.AddHttpClient<IEstateService, EstateService>();
 builder.Services.AddScoped<IEstateService, EstateService>();
 
+builder.Services.AddHttpClient<IEstateNumberService, EstateNumberService>();
+builder.Services.AddScoped<IEstateNumberService, EstateNumberService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
