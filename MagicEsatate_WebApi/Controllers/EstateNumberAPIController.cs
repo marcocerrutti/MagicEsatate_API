@@ -106,7 +106,7 @@ namespace MagicEsatate_WebApi.Controllers
                 //custom validation
                 if (await _dbEstateNumber.GetAsync(u => u.EstateNo == createDTO.EstateNo) != null)
                 {
-                    ModelState.AddModelError("CustomError", "Estate Number already Exists!");
+                    ModelState.AddModelError("ErrorMessages", "Estate Number already Exists!");
                     return BadRequest(ModelState);
                 }
                 if (await _dbEstate.GetAsync(u=>u.Id ==createDTO.EstateID) == null)
@@ -184,7 +184,7 @@ namespace MagicEsatate_WebApi.Controllers
 
                 if (await _dbEstate.GetAsync(u => u.Id == updateDTO.EstateID) == null)
                 {
-                    ModelState.AddModelError("CustomError", "Estate ID is Invalid");
+                    ModelState.AddModelError("ErrorMessages", "Estate ID is Invalid");
                     return BadRequest(ModelState);
                 }
 

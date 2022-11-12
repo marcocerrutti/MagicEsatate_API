@@ -1,32 +1,36 @@
-﻿using MagicEstate_Web.Models;
+﻿using AutoMapper;
+using MagicEsatate_Web.Models;
+using MagicEsatate_Web.Models.Dto;
+using MagicEstate_Web.Models;
+using MagicEstate_Web.Services.IService;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System.Diagnostics;
 
 namespace MagicEstate_Web.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly IEstateService _estateService;
+        private readonly IMapper _mapper;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(IEstateService estateService, IMapper mapper)
         {
-            _logger = logger;
+            _estateService = estateService;
+            _mapper = mapper;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            List<EstateDTO> list = new();
+
+            var response = await _estateService.GetAllAsync<APIResponse>();
+            if (response != null && response.IsSuccess)
+            {
+                list = JsonConvert.DeserializeObject<List<EstateDTO>>(Convert.ToString(response.Result));
+            }
+            return View(list);
         }
 
-        public IActionResult Privacy()
-        {
-            return View();
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
     }
 }

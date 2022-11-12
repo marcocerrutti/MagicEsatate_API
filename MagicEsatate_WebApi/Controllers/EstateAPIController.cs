@@ -105,7 +105,7 @@ namespace MagicEsatate_WebApi.Controllers
            //custom validation
            if(await _dbEstate.GetAsync(u => u.Name.ToLower()== createDTO.Name.ToLower())!=null)
             {
-                ModelState.AddModelError("CustomError", "Estate already Exists!");
+                ModelState.AddModelError("ErrorMessages", "Estate already Exists!");
                 return BadRequest(ModelState);
             }
             if(createDTO== null)
