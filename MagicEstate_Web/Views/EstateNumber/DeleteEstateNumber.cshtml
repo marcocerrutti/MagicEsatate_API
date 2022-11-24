@@ -1,46 +1,45 @@
-﻿@model MagicEstate_Web.Models.VM.EstateNumberCreateVM
+﻿@model MagicEstate_Web.Models.VM.EstateNumberDeleteVM
 
 
-<form asp-action="CreateEstateNumber">
+<form asp-action="DeleteEstateNumber">
     <br />
     <div class="container border p-3">
-        <h1 class="text-primary">Create Estate</h1>
+        <h1 class="text-primary">Delete Estate</h1>
         <hr />
-
+        <input hidden asp-for="EstateNumber.EstateNo"/>
         <div class="row">
-            <div asp-validation-summary="All" class="text-danger"></div>
+           
 
             <div class="col-2">
                 <label asp-for="EstateNumber.EstateNo" class="control-label pt-2" style="font-size:20px;"></label>
             </div>
             <div class="col-10 pb-3">
-                <input asp-for="EstateNumber.EstateNo" class="form-control" />
-                <span asp-validation-for="EstateNumber.EstateNo" class="text-danger"></span>
+                <input asp-for="EstateNumber.EstateNo" disabled class="form-control" />
+                
             </div>
 
             <div class="col-2">
                 <label asp-for="EstateNumber.EstateID" class="control-label pt-2" style="font-size:20px;"></label>
             </div>
             <div class="col-10 pb-3">
-                <select asp-for="EstateNumber.EstateID" class="form-select" asp-items="@Model.EstateList">
+                <select asp-for="EstateNumber.EstateID" disabled class="form-select" asp-items="@Model.EstateList">
                     <option disabled selected>--Select Estate</option>
                 </select>
-                <span asp-validation-for="EstateNumber.EstateID" class="text-danger"></span>
+                
             </div>
             <div class="col-2">
                 <label asp-for="EstateNumber.SpecialDetails" class="control-label pt-2" style="font-size:20px;"></label>
             </div>
             <div class="col-10 pb-3">
-                <textarea asp-for="EstateNumber.SpecialDetails" class="form-control" rows="5"></textarea>
-                <span asp-validation-for="EstateNumber.SpecialDetails" class="text-danger"></span>
+                <textarea asp-for="EstateNumber.SpecialDetails" readonly class="form-control" rows="5"></textarea>
             </div>
-             
+
 
             <div class="col-5 offset-2">
                 <a asp-action="IndexEstateNumber" asp-controller="EstateNumber" class="btn-primary btn form-control ">Back to List</a>
             </div>
             <div class="col-5">
-                <input type="submit" value="Create" class="btn btn-success form-control" />
+                <input type="submit" value="Delete" class="btn btn-success form-control" />
             </div>
         </div>
     </div>
@@ -48,7 +47,6 @@
 
 
 @section Scripts{
-        <partial name="_ValidationScriptsPartial"/>
+            <partial name="_ValidationScriptsPartial"/>
 }
-
 

@@ -1,10 +1,10 @@
-﻿@model MagicEstate_Web.Models.VM.EstateNumberCreateVM
+﻿@model MagicEstate_Web.Models.VM.EstateNumberUpdateVM
 
 
-<form asp-action="CreateEstateNumber">
+<form asp-action="UpdateEstateNumber">
     <br />
     <div class="container border p-3">
-        <h1 class="text-primary">Create Estate</h1>
+        <h1 class="text-primary">Update Estate</h1>
         <hr />
 
         <div class="row">
@@ -34,13 +34,13 @@
                 <textarea asp-for="EstateNumber.SpecialDetails" class="form-control" rows="5"></textarea>
                 <span asp-validation-for="EstateNumber.SpecialDetails" class="text-danger"></span>
             </div>
-             
+
 
             <div class="col-5 offset-2">
                 <a asp-action="IndexEstateNumber" asp-controller="EstateNumber" class="btn-primary btn form-control ">Back to List</a>
             </div>
             <div class="col-5">
-                <input type="submit" value="Create" class="btn btn-success form-control" />
+                <input type="submit" value="Update" class="btn btn-success form-control" />
             </div>
         </div>
     </div>
@@ -48,7 +48,7 @@
 
 
 @section Scripts{
-        <partial name="_ValidationScriptsPartial"/>
+            <partial name="_ValidationScriptsPartial"/>
 }
 
 

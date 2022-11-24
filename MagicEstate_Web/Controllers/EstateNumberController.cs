@@ -38,51 +38,92 @@ namespace MagicEstate_Web.Controllers
 
 
 
-        public async Task<IActionResult> UpdateEstateNumber(int estateId)
+        public async Task<IActionResult> UpdateEstateNumber(int estateNo)
         {
-            var response = await _estateNumberService.GetAsync<APIResponse>(estateId);
+            EstateNumberUpdateVM estateNumberVM = new();
+            var response = await _estateNumberService.GetAsync<APIResponse>(estateNo);
             if (response != null && response.IsSuccess)
             {
-                EstateDTO model = JsonConvert.DeserializeObject<EstateDTO>(Convert.ToString(response.Result));
-                return View(_mapper.Map<EstateUpdateDTO>(model));
+                EstateNumberDTO model = JsonConvert.DeserializeObject<EstateNumberDTO>(Convert.ToString(response.Result));
+               estateNumberVM.EstateNumber = _mapper.Map<EstateNumberUpdateDTO>(model);
             }
-
+             response = await _estateService.GetAllAsync<APIResponse>();
+            if (response != null && response.IsSuccess)
+            {
+                estateNumberVM.EstateList = JsonConvert.DeserializeObject<List<EstateDTO>>
+                    (Convert.ToString(response.Result)).Select(i => new SelectListItem
+                    {
+                        Text = i.Name,
+                        Value = i.Id.ToString()
+                    });
+                return View(estateNumberVM);
+            }
             return NotFound();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UpdateEstate(EstateNumberUpdateDTO model)
+        public async Task<IActionResult> UpdateEstateNumber(EstateNumberUpdateVM model)
         {
             if (ModelState.IsValid)
             {
-                var response = await _estateNumberService.UpdateAsync<APIResponse>(model);
+                var response = await _estateNumberService.UpdateAsync<APIResponse>(model.EstateNumber);
                 if (response != null && response.IsSuccess)
                 {
                     return RedirectToAction(nameof(IndexEstateNumber));
                 }
+                else
+                {
+                    if (response.ErrorMessages.Count > 0)
+                    {
+                        ModelState.AddModelError("ErrorMessages", response.ErrorMessages.FirstOrDefault());
+                    }
+                }
 
             }
+
+            var resp = await _estateService.GetAllAsync<APIResponse>();
+            if (resp != null && resp.IsSuccess)
+            {
+                model.EstateList = JsonConvert.DeserializeObject<List<EstateDTO>>
+                    (Convert.ToString(resp.Result)).Select(i => new SelectListItem
+                    {
+                        Text = i.Name,
+                        Value = i.Id.ToString()
+                    });
+            }
+
             return View(model);
         }
 
-        public async Task<IActionResult> DeleteEstateNumber(int estateId)
+        public async Task<IActionResult> DeleteEstateNumber(int estateNo)
         {
-            var response = await _estateNumberService.GetAsync<APIResponse>(estateId);
+            EstateNumberDeleteVM estateNumberVM = new();
+            var response = await _estateNumberService.GetAsync<APIResponse>(estateNo);
             if (response != null && response.IsSuccess)
             {
                 EstateNumberDTO model = JsonConvert.DeserializeObject<EstateNumberDTO>(Convert.ToString(response.Result));
-                return View(model);
+                estateNumberVM.EstateNumber = model;
             }
-
+            response = await _estateService.GetAllAsync<APIResponse>();
+            if (response != null && response.IsSuccess)
+            {
+                estateNumberVM.EstateList = JsonConvert.DeserializeObject<List<EstateDTO>>
+                    (Convert.ToString(response.Result)).Select(i => new SelectListItem
+                    {
+                        Text = i.Name,
+                        Value = i.Id.ToString()
+                    });
+                return View(estateNumberVM);
+            }
             return NotFound();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteEstateNumber(EstateNumberDTO model)
+        public async Task<IActionResult> DeleteEstateNumber(EstateNumberDeleteVM model)
         {
-            var response = await _estateNumberService.DeleteAsync<APIResponse>(model.EstateNo);
+            var response = await _estateNumberService.DeleteAsync<APIResponse>(model.EstateNumber.EstateNo);
             if (response != null && response.IsSuccess)
             {
                 return RedirectToAction(nameof(IndexEstateNumber));
@@ -97,7 +138,7 @@ namespace MagicEstate_Web.Controllers
             if (response != null && response.IsSuccess)
             {
                 estateNumberVM.EstateList = JsonConvert.DeserializeObject<List<EstateDTO>>
-                    (Convert.ToString(response.Result)).Select(i=> new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem
+                    (Convert.ToString(response.Result)).Select(i=> new SelectListItem
                     {
                         Text = i.Name,
                         Value = i.Id.ToString()

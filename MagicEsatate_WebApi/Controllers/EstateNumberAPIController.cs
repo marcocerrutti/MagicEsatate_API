@@ -70,7 +70,7 @@ namespace MagicEsatate_WebApi.Controllers
                 var estateNumber = await _dbEstateNumber.GetAsync(u => u.EstateNo == id);
                 if (estateNumber == null)
                 {
-                    _response.StatusCode = HttpStatusCode.BadRequest;
+                    _response.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(_response);
                 }
                 _response.Result = _mapper.Map<EstateNumberDTO>(estateNumber);

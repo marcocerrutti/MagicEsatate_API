@@ -44,6 +44,7 @@ namespace MagicEstate_Web.Controllers
             var response = await _estateService.GetAsync<APIResponse>(estateId);
             if (response != null && response.IsSuccess)
             {
+                
                 EstateDTO model = JsonConvert.DeserializeObject<EstateDTO>(Convert.ToString(response.Result));
                 return View(_mapper.Map<EstateUpdateDTO>(model));
             }
@@ -57,6 +58,7 @@ namespace MagicEstate_Web.Controllers
         {
             if (ModelState.IsValid)
             {
+                TempData["success"] = "Estate updated successfully";
                 var response = await _estateService.UpdateAsync<APIResponse>(model);
                 if (response != null && response.IsSuccess)
                 {
@@ -64,6 +66,7 @@ namespace MagicEstate_Web.Controllers
                 }
 
             }
+            TempData["error"] = "Error encountered.";
             return View(model);
         }
 
@@ -86,9 +89,10 @@ namespace MagicEstate_Web.Controllers
                 var response = await _estateService.DeleteAsync<APIResponse>(model.Id);
                 if (response != null && response.IsSuccess)
                 {
-                    return RedirectToAction(nameof(IndexEstate));
+                TempData["success"] = "Estate deleted successfully";
+                return RedirectToAction(nameof(IndexEstate));
                 }
-
+            TempData["error"] = "Error encountered.";
             return View(model);
         }
 
@@ -101,10 +105,12 @@ namespace MagicEstate_Web.Controllers
                 var response = await _estateService.CreateAsync<APIResponse>(model);
                 if (response != null && response.IsSuccess)
                 {
+                    TempData["success"] = "Estate created successfully";
                     return RedirectToAction(nameof(IndexEstate));
                 }
                
             }
+            TempData["error"] = "Error encountered.";
             return View(model);
         }
 
