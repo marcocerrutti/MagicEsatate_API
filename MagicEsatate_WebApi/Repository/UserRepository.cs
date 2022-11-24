@@ -2,15 +2,22 @@
 using MagicEsatate_WebApi.Models.Dto;
 using MagicEsatate_WebApi.Repository.IRepository;
 using MagicEsatate_WebApi.Data;
+using System.IdentityModel.Tokens.Jwt;
+using System.Text;
+using Microsoft.IdentityModel.Tokens;
+using System.Data;
+using System.Security.Claims;
 
 namespace MagicEsatate_WebApi.Repository
 {
     public class UserRepository : IUserRepository
     {
         private readonly ApplcationDbContext _db;
-        public UserRepository(ApplcationDbContext db)
+        private string secretKey;
+        public UserRepository(ApplcationDbContext db, IConfiguration configuration)
         {
             _db = db;
+            secretKey = configuration.GetValue<string>("ApiSettings:Secret");
         }
 
         public bool IsUniqueUser(string username)
@@ -23,9 +30,40 @@ namespace MagicEsatate_WebApi.Repository
             return false;
         }
 
-        public Task<LoginResponseDTO> Login(LoginRequestDTO loginRequestDTO)
+        public async Task<LoginResponseDTO> Login(LoginRequestDTO loginRequestDTO)
         {
-            throw new NotImplementedException();
+            var user = _db.LocalUsers.FirstOrDefault(u => u.UserName.ToLower() == loginRequestDTO.UserName.ToLower()
+            && u.Password == loginRequestDTO.Password);
+
+            if (user == null)
+            {
+                return null;
+            }
+            //if user was found generate the JWT Token
+            //Generate security token using JWT security token handler
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(secretKey);
+
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new Claim[]
+                {
+                    new Claim(ClaimTypes.Name, user.UserName.ToString()),
+                    new Claim(ClaimTypes.Role,user.Role)
+                }),
+                Expires = DateTime.UtcNow.AddDays(7),
+                SigningCredentials = new(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+
+            };
+
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            LoginResponseDTO loginResponseDTO = new LoginResponseDTO()
+            {
+                Token = tokenHandler.WriteToken(token),
+                User = user
+
+            };
+            return loginResponseDTO;
         }
 
         public async Task<LocalUser> Register(RegistrationRequestDTO registrationRequestDTO)
