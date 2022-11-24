@@ -11,6 +11,7 @@ namespace MagicEsatate_WebApi.Data
 
         }
 
+        public DbSet<LocalUser> LocalUsers { get; set; }
         public DbSet<Estate> Estates { get; set; }
 
         public DbSet<EstateNumber> EstateNumbers { get; set; }
