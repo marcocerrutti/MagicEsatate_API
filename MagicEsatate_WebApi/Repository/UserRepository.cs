@@ -37,7 +37,11 @@ namespace MagicEsatate_WebApi.Repository
 
             if (user == null)
             {
-                return null;
+                return new LoginResponseDTO()
+                {
+                    Token = "",
+                    User = null
+                };
             }
             //if user was found generate the JWT Token
             //Generate security token using JWT security token handler
@@ -48,7 +52,7 @@ namespace MagicEsatate_WebApi.Repository
             {
                 Subject = new ClaimsIdentity(new Claim[]
                 {
-                    new Claim(ClaimTypes.Name, user.UserName.ToString()),
+                    new Claim(ClaimTypes.Name, user.Id.ToString()),
                     new Claim(ClaimTypes.Role,user.Role)
                 }),
                 Expires = DateTime.UtcNow.AddDays(7),
