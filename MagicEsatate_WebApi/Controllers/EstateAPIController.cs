@@ -3,6 +3,7 @@ using MagicEsatate_WebApi.Data;
 using MagicEsatate_WebApi.Models;
 using MagicEsatate_WebApi.Models.Dto;
 using MagicEsatate_WebApi.Repository.IRepository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -27,6 +28,7 @@ namespace MagicEsatate_WebApi.Controllers
         }
         
         [HttpGet]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
 
         //using ActionResult you define the return type which in this case is EstateDTO
@@ -48,7 +50,8 @@ namespace MagicEsatate_WebApi.Controllers
             }
             return _response;
         }
-       
+
+        [Authorize(Roles = "admin")]
         [HttpGet("{id:int}", Name ="GetEstate")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -149,6 +152,7 @@ namespace MagicEsatate_WebApi.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [Authorize(Roles = "CUSTOM")]
         public async Task<ActionResult<APIResponse>> DeleteEstate(int id)
         {
             try
