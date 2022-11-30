@@ -29,6 +29,8 @@ namespace MagicEsatate_WebApi.Controllers
         
         [HttpGet]
         [Authorize]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status200OK)]
 
         //using ActionResult you define the return type which in this case is EstateDTO
@@ -54,6 +56,8 @@ namespace MagicEsatate_WebApi.Controllers
         [Authorize(Roles = "admin")]
         [HttpGet("{id:int}", Name ="GetEstate")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
        // [ProducesResponseType(200, Type = typeof(EstateDTO))]
@@ -150,6 +154,8 @@ namespace MagicEsatate_WebApi.Controllers
 
         [HttpDelete("{id:int}", Name = "DeleteEstate")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [Authorize(Roles = "CUSTOM")]
