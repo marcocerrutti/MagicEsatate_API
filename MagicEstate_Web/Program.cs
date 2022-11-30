@@ -13,7 +13,7 @@ builder.Services.AddScoped<IEstateService, EstateService>();
 
 builder.Services.AddHttpClient<IEstateNumberService, EstateNumberService>();
 builder.Services.AddScoped<IEstateNumberService, EstateNumberService>();
-
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddHttpClient<IAuthService, AuthService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddDistributedMemoryCache();
