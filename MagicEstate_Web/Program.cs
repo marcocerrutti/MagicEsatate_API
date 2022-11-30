@@ -14,6 +14,10 @@ builder.Services.AddScoped<IEstateService, EstateService>();
 builder.Services.AddHttpClient<IEstateNumberService, EstateNumberService>();
 builder.Services.AddScoped<IEstateNumberService, EstateNumberService>();
 
+builder.Services.AddHttpClient<IAuthService, AuthService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
