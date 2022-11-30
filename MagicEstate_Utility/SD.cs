@@ -15,5 +15,6 @@ namespace MagicEstate_Utility
             PUT,
             DELETE
         }
+        public static string SessionToken = "JWToken";
     }
 }
