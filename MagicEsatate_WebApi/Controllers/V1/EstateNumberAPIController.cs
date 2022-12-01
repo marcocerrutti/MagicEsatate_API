@@ -10,12 +10,12 @@ using Microsoft.AspNetCore.Mvc;
 using System.Data;
 using System.Net;
 
-namespace MagicEsatate_WebApi.Controllers
+namespace MagicEsatate_WebApi.Controllers.V1
 {
     [Route("api/v{version:apiVersion}/EstateNumberAPI")]
     [ApiController]
     [ApiVersion("1.0")]
-    [ApiVersion("2.0")]
+
     public class EstateNumberAPIController : ControllerBase
     {
         protected APIResponse _response;
@@ -28,12 +28,12 @@ namespace MagicEsatate_WebApi.Controllers
             _dbEstateNumber = dbEstateNumber;
             _dbEstate = dbEstate;
             _mapper = mapper;
-            this._response = new();
+            _response = new();
         }
 
 
         [HttpGet]
-        [MapToApiVersion("1.0")]
+        //[MapToApiVersion("1.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
 
         //using ActionResult you define the return type which in this case is EstateDTO
@@ -43,7 +43,7 @@ namespace MagicEsatate_WebApi.Controllers
             {
 
 
-                IEnumerable<EstateNumber> estateNumberList = await _dbEstateNumber.GetAllAsync(includeProperties:"Estate");
+                IEnumerable<EstateNumber> estateNumberList = await _dbEstateNumber.GetAllAsync(includeProperties: "Estate");
                 _response.Result = _mapper.Map<List<EstateNumberDTO>>(estateNumberList);
                 _response.StatusCode = HttpStatusCode.OK;
                 return Ok(_response);
@@ -54,13 +54,6 @@ namespace MagicEsatate_WebApi.Controllers
                 _response.ErrorMessages = new List<string>() { ex.ToString() };
             }
             return _response;
-        }
-
-        [HttpGet]
-        [MapToApiVersion("2.0")]
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "value1", "value2" };
         }
 
 
@@ -122,7 +115,7 @@ namespace MagicEsatate_WebApi.Controllers
                     ModelState.AddModelError("ErrorMessages", "Estate Number already Exists!");
                     return BadRequest(ModelState);
                 }
-                if (await _dbEstate.GetAsync(u=>u.Id ==createDTO.EstateID) == null)
+                if (await _dbEstate.GetAsync(u => u.Id == createDTO.EstateID) == null)
                 {
                     ModelState.AddModelError("CustomError", "Estate ID is Invalid");
                     return BadRequest(ModelState);
@@ -131,7 +124,7 @@ namespace MagicEsatate_WebApi.Controllers
                 {
                     return BadRequest(createDTO);
                 }
-              
+
                 //create the conversion
                 EstateNumber estateNumber = _mapper.Map<EstateNumber>(createDTO);
 
@@ -204,7 +197,7 @@ namespace MagicEsatate_WebApi.Controllers
                 }
 
                 EstateNumber model = _mapper.Map<EstateNumber>(updateDTO);
-           
+
                 await _dbEstateNumber.UpdateAsync(model);
                 _response.StatusCode = HttpStatusCode.NoContent;
                 _response.IsSuccess = true;

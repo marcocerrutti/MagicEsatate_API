@@ -4,7 +4,7 @@ using MagicEsatate_WebApi.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
-namespace MagicEsatate_WebApi.Controllers
+namespace MagicEsatate_WebApi.Controllers.V1
 {
     [Route("api/v{version:apiVersion}/UsersAuth")]
     [ApiController]
@@ -15,8 +15,8 @@ namespace MagicEsatate_WebApi.Controllers
         protected APIResponse _response;
         public UsersController(IUserRepository userRepo)
         {
-            _userRepo= userRepo;
-            this._response = new();
+            _userRepo = userRepo;
+            _response = new();
         }
 
         [HttpPost("Login")]
