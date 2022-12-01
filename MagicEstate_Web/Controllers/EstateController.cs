@@ -2,6 +2,7 @@
 using MagicEsatate_Web.Models;
 using MagicEsatate_Web.Models.Dto;
 using MagicEstate_Web.Services.IService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Collections.Generic;
@@ -33,12 +34,14 @@ namespace MagicEstate_Web.Controllers
             return View(list);
         }
 
+        [Authorize(Roles ="admin")]
         public async Task<IActionResult> CreateEstate()
         {
            
             return View();
         }
 
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> UpdateEstate(int estateId)
         {
             var response = await _estateService.GetAsync<APIResponse>(estateId);
@@ -52,6 +55,7 @@ namespace MagicEstate_Web.Controllers
             return NotFound();
         }
 
+        [Authorize(Roles = "admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateEstate(EstateUpdateDTO model)
@@ -70,6 +74,7 @@ namespace MagicEstate_Web.Controllers
             return View(model);
         }
 
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> DeleteEstate(int estateId)
         {
             var response = await _estateService.GetAsync<APIResponse>(estateId);
@@ -82,6 +87,7 @@ namespace MagicEstate_Web.Controllers
             return NotFound();
         }
 
+        [Authorize(Roles = "admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteEstate(EstateDTO model)
@@ -96,6 +102,7 @@ namespace MagicEstate_Web.Controllers
             return View(model);
         }
 
+        [Authorize(Roles = "admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateEstate(EstateCreateDTO model)

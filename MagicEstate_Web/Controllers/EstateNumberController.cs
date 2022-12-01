@@ -4,10 +4,12 @@ using MagicEsatate_Web.Models.Dto;
 using MagicEstate_Web.Models.VM;
 using MagicEstate_Web.Services;
 using MagicEstate_Web.Services.IService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 
 namespace MagicEstate_Web.Controllers
@@ -37,7 +39,7 @@ namespace MagicEstate_Web.Controllers
         }
 
 
-
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> UpdateEstateNumber(int estateNo)
         {
             EstateNumberUpdateVM estateNumberVM = new();
@@ -61,6 +63,8 @@ namespace MagicEstate_Web.Controllers
             return NotFound();
         }
 
+
+        [Authorize(Roles = "admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateEstateNumber(EstateNumberUpdateVM model)
@@ -96,6 +100,7 @@ namespace MagicEstate_Web.Controllers
             return View(model);
         }
 
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> DeleteEstateNumber(int estateNo)
         {
             EstateNumberDeleteVM estateNumberVM = new();
@@ -119,6 +124,7 @@ namespace MagicEstate_Web.Controllers
             return NotFound();
         }
 
+        [Authorize(Roles = "admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteEstateNumber(EstateNumberDeleteVM model)
@@ -131,6 +137,8 @@ namespace MagicEstate_Web.Controllers
 
             return View(model);
         }
+
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> CreateEstateNumber()
         {
             EstateNumberCreateVM estateNumberVM = new();
@@ -147,6 +155,7 @@ namespace MagicEstate_Web.Controllers
             return View(estateNumberVM);
         }
 
+        [Authorize(Roles = "admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateEstateNumber(EstateNumberCreateVM model)
