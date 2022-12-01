@@ -24,7 +24,7 @@ namespace MagicEstate_Web.Services
             {
                 ApiType = SD.ApiType.POST,
                 Data = dto,
-                Url = estateUrl + "/api/EstateAPI",
+                Url = estateUrl + "/api/v1/EstateAPI",
                 Token = token
             });
         }
@@ -34,7 +34,7 @@ namespace MagicEstate_Web.Services
             return SendAsync<T>(new APIRequest()
             {
                 ApiType = SD.ApiType.DELETE,
-                Url = estateUrl + "/api/EstateAPI/"+id,
+                Url = estateUrl + "/api/v1/EstateAPI/" + id,
                 Token= token
 
             });
@@ -45,7 +45,7 @@ namespace MagicEstate_Web.Services
             return SendAsync<T>(new APIRequest()
             {
                 ApiType = SD.ApiType.GET,
-                Url = estateUrl + "/api/EstateAPI",
+                Url = estateUrl + "/api/v1/EstateAPI",
                 Token = token
             });
         }
@@ -55,7 +55,7 @@ namespace MagicEstate_Web.Services
             return SendAsync<T>(new APIRequest()
             {
                 ApiType = SD.ApiType.GET,
-                Url = estateUrl + "/api/EstateAPI/"+id,
+                Url = estateUrl + "/api/v1/EstateAPI/" + id,
                 Token = token
             });
         }
@@ -66,7 +66,7 @@ namespace MagicEstate_Web.Services
             {
                 ApiType = SD.ApiType.PUT,
                 Data = dto,
-                Url = estateUrl + "/api/EstateAPI/"+ dto.Id,
+                Url = estateUrl + "/api/v1/EstateAPI/" + dto.Id,
                 Token = token
             });
         }

@@ -23,7 +23,7 @@ namespace MagicEstate_Web.Services
             {
                 ApiType = SD.ApiType.POST,
                 Data = obj,
-                Url = estateUrl + "/api/UsersAuth/Login"
+                Url = estateUrl + "/api/v1/UsersAuth/Login"
 
             });
         }
@@ -34,7 +34,7 @@ namespace MagicEstate_Web.Services
             {
                 ApiType = SD.ApiType.POST,
                 Data = obj,
-                Url = estateUrl + "/api/UsersAuth/register"
+                Url = estateUrl + "/api/v1/UsersAuth/register"
 
             });
         }
