@@ -12,8 +12,10 @@ using System.Net;
 
 namespace MagicEsatate_WebApi.Controllers
 {
-    [Route("api/EstateNumberAPI")]
+    [Route("api/v{version:apiVersion}/EstateNumberAPI")]
     [ApiController]
+    [ApiVersion("1.0")]
+    [ApiVersion("2.0")]
     public class EstateNumberAPIController : ControllerBase
     {
         protected APIResponse _response;
@@ -31,6 +33,7 @@ namespace MagicEsatate_WebApi.Controllers
 
 
         [HttpGet]
+        [MapToApiVersion("1.0")]
         [ProducesResponseType(StatusCodes.Status200OK)]
 
         //using ActionResult you define the return type which in this case is EstateDTO
@@ -51,6 +54,13 @@ namespace MagicEsatate_WebApi.Controllers
                 _response.ErrorMessages = new List<string>() { ex.ToString() };
             }
             return _response;
+        }
+
+        [HttpGet]
+        [MapToApiVersion("2.0")]
+        public IEnumerable<string> Get()
+        {
+            return new string[] { "value1", "value2" };
         }
 
 

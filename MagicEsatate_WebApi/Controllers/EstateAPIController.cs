@@ -13,8 +13,9 @@ using System.Net;
 namespace MagicEsatate_WebApi.Controllers
 {
     //[Route("Api/[controller]")]
-    [Route("api/EstateAPI")]
+    [Route("api/v{version:apiVersion}/EstateAPI")]
     [ApiController]
+    [ApiVersion("1.0")]
     public class EstateAPIController: ControllerBase
     {
         protected APIResponse _response;
