@@ -14,6 +14,7 @@ using System.Text;
 using Microsoft.OpenApi.Models;
 using System.Net;
 using Microsoft.IdentityModel.Logging;
+using Microsoft.AspNetCore.Builder;
 
 ;
 
@@ -101,6 +102,23 @@ builder.Services.AddSwaggerGen(options =>
             new List<string>()
         }
     });
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Version ="v1.0",
+        Title ="Magic Estate",
+        Description ="API to manage Estate",
+        TermsOfService= new Uri("https://example.com/terms"),
+        Contact=  new OpenApiContact
+        {
+            Name="Ludablink Herme",
+            Url= new Uri("https://hermesgoldsolutions.com")
+        },
+        License=new OpenApiLicense
+        {
+            Name="Example License",
+            Url = new Uri("https://example.com")
+        }
+    });
 });
 
 
@@ -110,7 +128,10 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/v1/swagger.json","Magic_EstateV1");
+    });
 }
 
 app.UseHttpsRedirection();
