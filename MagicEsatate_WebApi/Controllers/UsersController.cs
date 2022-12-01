@@ -4,11 +4,11 @@ using MagicEsatate_WebApi.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
-namespace MagicEsatate_WebApi.Controllers.V1
+namespace MagicEsatate_WebApi.Controllers
 {
     [Route("api/v{version:apiVersion}/UsersAuth")]
     [ApiController]
-    [ApiVersion("1.0")]
+    [ApiVersionNeutral]
     public class UsersController : Controller
     {
         private readonly IUserRepository _userRepo;

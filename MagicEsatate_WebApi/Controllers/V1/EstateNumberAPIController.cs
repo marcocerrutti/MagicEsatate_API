@@ -15,6 +15,7 @@ namespace MagicEsatate_WebApi.Controllers.V1
     [Route("api/v{version:apiVersion}/EstateNumberAPI")]
     [ApiController]
     [ApiVersion("1.0")]
+    //[ApiVersion("1.0", Deprecated =true)]
 
     public class EstateNumberAPIController : ControllerBase
     {
@@ -30,6 +31,13 @@ namespace MagicEsatate_WebApi.Controllers.V1
             _mapper = mapper;
             _response = new();
         }
+
+        [HttpGet("GetString")]
+        public IEnumerable<string> Get()
+        {
+            return new string[] { "string1", "string2" };
+        }
+
 
 
         [HttpGet]
