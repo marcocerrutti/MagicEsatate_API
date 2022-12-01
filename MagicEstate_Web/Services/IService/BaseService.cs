@@ -2,6 +2,7 @@
 using MagicEstate_Utility;
 using MagicEstate_Web.Models;
 using Newtonsoft.Json;
+using System.Net.Http.Headers;
 using System.Text;
 
 namespace MagicEstate_Web.Services.IService
@@ -44,6 +45,10 @@ namespace MagicEstate_Web.Services.IService
                         break;
                 }
                 HttpResponseMessage apiResponse = null;
+                if(!string.IsNullOrEmpty(apiRequest.Token))
+                {
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apiRequest.Token);
+                }
                 apiResponse = await client.SendAsync(message);
 
                 var apiContent = await apiResponse.Content.ReadAsStringAsync();

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using MagicEsatate_Web.Models;
 using MagicEsatate_Web.Models.Dto;
+using MagicEstate_Utility;
 using MagicEstate_Web.Models;
 using MagicEstate_Web.Services.IService;
 using Microsoft.AspNetCore.Mvc;
@@ -24,7 +25,7 @@ namespace MagicEstate_Web.Controllers
         {
             List<EstateDTO> list = new();
 
-            var response = await _estateService.GetAllAsync<APIResponse>();
+            var response = await _estateService.GetAllAsync<APIResponse>(HttpContext.Session.GetString(SD.SessionToken));
             if (response != null && response.IsSuccess)
             {
                 list = JsonConvert.DeserializeObject<List<EstateDTO>>(Convert.ToString(response.Result));

@@ -28,7 +28,7 @@ namespace MagicEsatate_WebApi.Controllers
         }
         
         [HttpGet]
-        [Authorize]
+        
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -53,7 +53,7 @@ namespace MagicEsatate_WebApi.Controllers
             return _response;
         }
 
-        [Authorize(Roles = "admin")]
+        
         [HttpGet("{id:int}", Name ="GetEstate")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -61,7 +61,6 @@ namespace MagicEsatate_WebApi.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
        // [ProducesResponseType(200, Type = typeof(EstateDTO))]
-       
         public async Task<ActionResult<APIResponse>> GetEstates(int id)
         {
             try
@@ -93,6 +92,7 @@ namespace MagicEsatate_WebApi.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "admin")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -158,7 +158,7 @@ namespace MagicEsatate_WebApi.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [Authorize(Roles = "CUSTOM")]
+        [Authorize(Roles = "admin")]
         public async Task<ActionResult<APIResponse>> DeleteEstate(int id)
         {
             try
@@ -188,6 +188,8 @@ namespace MagicEsatate_WebApi.Controllers
             return _response;
         }
 
+
+        [Authorize(Roles = "admin")]
         [HttpPut("{id:int}", Name = "UpdateEstate")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -232,6 +234,7 @@ namespace MagicEsatate_WebApi.Controllers
             return _response;
         }
 
+        
         [HttpPatch("{id:int}", Name = "UpdatePartialEstate")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

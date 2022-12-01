@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using MagicEsatate_Web.Models;
 using MagicEsatate_Web.Models.Dto;
+using MagicEstate_Utility;
 using MagicEstate_Web.Services.IService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -26,7 +27,7 @@ namespace MagicEstate_Web.Controllers
         {
             List<EstateDTO> list = new();
 
-            var response = await _estateService.GetAllAsync<APIResponse>();
+            var response = await _estateService.GetAllAsync<APIResponse>(HttpContext.Session.GetString(SD.SessionToken));
             if (response != null && response.IsSuccess)
             {
                 list = JsonConvert.DeserializeObject<List<EstateDTO>>(Convert.ToString(response.Result));
@@ -44,7 +45,7 @@ namespace MagicEstate_Web.Controllers
         [Authorize(Roles = "admin")]
         public async Task<IActionResult> UpdateEstate(int estateId)
         {
-            var response = await _estateService.GetAsync<APIResponse>(estateId);
+            var response = await _estateService.GetAsync<APIResponse>(estateId, HttpContext.Session.GetString(SD.SessionToken));
             if (response != null && response.IsSuccess)
             {
                 
@@ -63,7 +64,7 @@ namespace MagicEstate_Web.Controllers
             if (ModelState.IsValid)
             {
                 TempData["success"] = "Estate updated successfully";
-                var response = await _estateService.UpdateAsync<APIResponse>(model);
+                var response = await _estateService.UpdateAsync<APIResponse>(model, HttpContext.Session.GetString(SD.SessionToken));
                 if (response != null && response.IsSuccess)
                 {
                     return RedirectToAction(nameof(IndexEstate));
@@ -77,7 +78,7 @@ namespace MagicEstate_Web.Controllers
         [Authorize(Roles = "admin")]
         public async Task<IActionResult> DeleteEstate(int estateId)
         {
-            var response = await _estateService.GetAsync<APIResponse>(estateId);
+            var response = await _estateService.GetAsync<APIResponse>(estateId, HttpContext.Session.GetString(SD.SessionToken));
             if (response != null && response.IsSuccess)
             {
                 EstateDTO model = JsonConvert.DeserializeObject<EstateDTO>(Convert.ToString(response.Result));
@@ -92,7 +93,7 @@ namespace MagicEstate_Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteEstate(EstateDTO model)
         {
-                var response = await _estateService.DeleteAsync<APIResponse>(model.Id);
+                var response = await _estateService.DeleteAsync<APIResponse>(model.Id, HttpContext.Session.GetString(SD.SessionToken));
                 if (response != null && response.IsSuccess)
                 {
                 TempData["success"] = "Estate deleted successfully";
@@ -109,7 +110,7 @@ namespace MagicEstate_Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                var response = await _estateService.CreateAsync<APIResponse>(model);
+                var response = await _estateService.CreateAsync<APIResponse>(model, HttpContext.Session.GetString(SD.SessionToken));
                 if (response != null && response.IsSuccess)
                 {
                     TempData["success"] = "Estate created successfully";

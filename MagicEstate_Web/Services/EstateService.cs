@@ -3,6 +3,7 @@ using MagicEstate_Utility;
 using MagicEstate_Web.Models;
 using MagicEstate_Web.Services.IService;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 
 namespace MagicEstate_Web.Services
 {
@@ -17,55 +18,56 @@ namespace MagicEstate_Web.Services
             estateUrl = configuration.GetValue<string>("ServiceUrls:EstateAPI");
         }
 
-        public Task<T> CreateAsync<T>(EstateCreateDTO dto)
+        public Task<T> CreateAsync<T>(EstateCreateDTO dto, string token)
         {
             return SendAsync<T>(new APIRequest()
             {
                 ApiType = SD.ApiType.POST,
                 Data = dto,
-                Url = estateUrl + "/api/EstateAPI"
-
+                Url = estateUrl + "/api/EstateAPI",
+                Token = token
             });
         }
 
-        public Task<T> DeleteAsync<T>(int id)
+        public Task<T> DeleteAsync<T>(int id, string token)
         {
             return SendAsync<T>(new APIRequest()
             {
                 ApiType = SD.ApiType.DELETE,
-                Url = estateUrl + "/api/EstateAPI/"+id
+                Url = estateUrl + "/api/EstateAPI/"+id,
+                Token= token
 
             });
         }
 
-        public Task<T> GetAllAsync<T>()
+        public Task<T> GetAllAsync<T>(string token)
         {
             return SendAsync<T>(new APIRequest()
             {
                 ApiType = SD.ApiType.GET,
-                Url = estateUrl + "/api/EstateAPI"
-
+                Url = estateUrl + "/api/EstateAPI",
+                Token = token
             });
         }
 
-        public Task<T> GetAsync<T>(int id)
+        public Task<T> GetAsync<T>(int id, string token)
         {
             return SendAsync<T>(new APIRequest()
             {
                 ApiType = SD.ApiType.GET,
-                Url = estateUrl + "/api/EstateAPI/"+id
-
+                Url = estateUrl + "/api/EstateAPI/"+id,
+                Token = token
             });
         }
 
-        public Task<T> UpdateAsync<T>(EstateUpdateDTO dto)
+        public Task<T> UpdateAsync<T>(EstateUpdateDTO dto, string token)
         {
             return SendAsync<T>(new APIRequest()
             {
                 ApiType = SD.ApiType.PUT,
                 Data = dto,
-                Url = estateUrl + "/api/EstateAPI/"+ dto.Id
-
+                Url = estateUrl + "/api/EstateAPI/"+ dto.Id,
+                Token = token
             });
         }
     }
