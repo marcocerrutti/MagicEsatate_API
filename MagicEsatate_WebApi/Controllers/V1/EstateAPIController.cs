@@ -29,7 +29,7 @@ namespace MagicEsatate_WebApi.Controllers.V1
         }
 
         [HttpGet]
-
+        [ResponseCache(Duration =30)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -62,6 +62,7 @@ namespace MagicEsatate_WebApi.Controllers.V1
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         // [ProducesResponseType(200, Type = typeof(EstateDTO))]
+        //[ResponseCache(Location = ResponseCacheLocation.None, NoStore =true)]
         public async Task<ActionResult<APIResponse>> GetEstates(int id)
         {
             try

@@ -26,6 +26,7 @@ builder.Services.AddDbContext<ApplcationDbContext>(option =>
 {
     option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultSQLConnection"));
 });
+builder.Services.AddResponseCaching();
 builder.Services.AddScoped<IEstateRepository, EstateRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IEstateNumberRepository, EstateNumberRepository>();
