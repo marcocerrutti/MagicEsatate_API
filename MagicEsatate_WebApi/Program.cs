@@ -16,6 +16,8 @@ using System.Net;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Identity;
+using MagicEsatate_WebApi.Models;
 
 ;
 
@@ -27,6 +29,7 @@ builder.Services.AddDbContext<ApplcationDbContext>(option =>
 {
     option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultSQLConnection"));
 });
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<ApplcationDbContext>();
 builder.Services.AddResponseCaching();
 builder.Services.AddScoped<IEstateRepository, EstateRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();

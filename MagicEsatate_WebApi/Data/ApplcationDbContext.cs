@@ -1,16 +1,19 @@
 ﻿using MagicEsatate_WebApi.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace MagicEsatate_WebApi.Data
 {
-    public class ApplcationDbContext: DbContext
+    public class ApplcationDbContext: IdentityDbContext<ApplicationUser>
     {
         public ApplcationDbContext(DbContextOptions<ApplcationDbContext> options): base(options) 
         { 
 
         }
 
+
+        public DbSet<ApplicationUser> ApplicationUsers { get; set; }
         public DbSet<LocalUser> LocalUsers { get; set; }
         public DbSet<Estate> Estates { get; set; }
 
@@ -19,6 +22,8 @@ namespace MagicEsatate_WebApi.Data
         //seed data to the database
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
             modelBuilder.Entity<Estate>().HasData(
                 new Estate()
                 {

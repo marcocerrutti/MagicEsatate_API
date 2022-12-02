@@ -37,7 +37,7 @@ namespace MagicEsatate_WebApi.Controllers.V1
 
         //using ActionResult you define the return type which in this case is EstateDTO
         public async Task<ActionResult<APIResponse>> GetEstates([FromQuery(Name ="filterOccupancy")]int? occupancy,
-            [FromQuery] string? search, int pageSize = 2, int pageNumber = 1)
+            [FromQuery] string? search, int pageSize = 0, int pageNumber = 1)
         {
             try
             {
