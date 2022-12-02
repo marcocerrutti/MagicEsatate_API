@@ -18,6 +18,7 @@ namespace MagicEsatate_WebApi
             CreateMap<EstateNumber, EstateNumberDTO>().ReverseMap();
             CreateMap<EstateNumber, EstateNumberCreateDTO>().ReverseMap();
             CreateMap<EstateNumber, EstateNumberUpdateDTO>().ReverseMap();
+            CreateMap<ApplicationUser, UserDTO>().ReverseMap();
 
         }
 

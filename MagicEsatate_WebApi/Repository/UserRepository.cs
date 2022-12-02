@@ -7,22 +7,30 @@ using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using System.Data;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Identity;
+using AutoMapper;
 
 namespace MagicEsatate_WebApi.Repository
 {
     public class UserRepository : IUserRepository
     {
         private readonly ApplcationDbContext _db;
+        private readonly UserManager<ApplicationUser> _userManager;
         private string secretKey;
-        public UserRepository(ApplcationDbContext db, IConfiguration configuration)
+        private readonly IMapper _mapper;
+
+        public UserRepository(ApplcationDbContext db, IConfiguration configuration,
+            UserManager<ApplicationUser> userManager, IMpper mapper)
         {
             _db = db;
+            _userManager = userManager;
             secretKey = configuration.GetValue<string>("ApiSettings:Secret");
+            _mapper = mapper;
         }
 
         public bool IsUniqueUser(string username)
         {
-            var user = _db.LocalUsers.FirstOrDefault(x => x.UserName == username);
+            var user = _db.ApplicationUsers.FirstOrDefault(x => x.UserName == username);
             if (user == null)
             {
                 return true;
@@ -32,10 +40,12 @@ namespace MagicEsatate_WebApi.Repository
 
         public async Task<LoginResponseDTO> Login(LoginRequestDTO loginRequestDTO)
         {
-            var user = _db.LocalUsers.FirstOrDefault(u => u.UserName.ToLower() == loginRequestDTO.UserName.ToLower()
-            && u.Password == loginRequestDTO.Password);
+            var user = _db.ApplicationUsers
+                .FirstOrDefault(u => u.UserName.ToLower() == loginRequestDTO.UserName.ToLower());
 
-            if (user == null)
+            bool isValid = await _userManager.CheckPasswordAsync(user, loginRequestDTO.Password);
+
+            if (user == null || isValid ==false)
             {
                 return new LoginResponseDTO()
                 {
@@ -45,6 +55,7 @@ namespace MagicEsatate_WebApi.Repository
             }
             //if user was found generate the JWT Token
             //Generate security token using JWT security token handler
+            var roles = await _userManager.GetRolesAsync(user);
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(secretKey);
 
@@ -53,7 +64,7 @@ namespace MagicEsatate_WebApi.Repository
                 Subject = new ClaimsIdentity(new Claim[]
                 {
                     new Claim(ClaimTypes.Name, user.Id.ToString()),
-                    new Claim(ClaimTypes.Role,user.Role)
+                    new Claim(ClaimTypes.Role, roles.FirstOrDefault())
                 }),
                 Expires = DateTime.UtcNow.AddDays(7),
                 SigningCredentials = new(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
@@ -64,7 +75,8 @@ namespace MagicEsatate_WebApi.Repository
             LoginResponseDTO loginResponseDTO = new LoginResponseDTO()
             {
                 Token = tokenHandler.WriteToken(token),
-                User = user
+                User = _mapper.Map<UserDTO>(user),
+                Role = roles.FirstOrDefault(),
 
             };
             return loginResponseDTO;
