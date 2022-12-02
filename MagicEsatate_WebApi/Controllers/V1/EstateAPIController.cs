@@ -35,13 +35,22 @@ namespace MagicEsatate_WebApi.Controllers.V1
         [ProducesResponseType(StatusCodes.Status200OK)]
 
         //using ActionResult you define the return type which in this case is EstateDTO
-        public async Task<ActionResult<APIResponse>> GetEstates()
+        public async Task<ActionResult<APIResponse>> GetEstates([FromQuery(Name ="filterOccupancy")]int? occupancy)
         {
             try
             {
 
 
-                IEnumerable<Estate> estateList = await _dbEstate.GetAllAsync();
+                IEnumerable<Estate> estateList;
+                if(occupancy > 0)
+                {
+                    estateList = await _dbEstate.GetAllAsync(u=>u.Occupancy == occupancy);
+                }
+                else
+                {
+                    estateList   = await _dbEstate.GetAllAsync();
+                }
+               
                 _response.Result = _mapper.Map<List<EstateDTO>>(estateList);
                 _response.StatusCode = HttpStatusCode.OK;
                 return Ok(_response);
