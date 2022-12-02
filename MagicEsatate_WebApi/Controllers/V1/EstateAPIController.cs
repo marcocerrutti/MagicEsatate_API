@@ -36,7 +36,7 @@ namespace MagicEsatate_WebApi.Controllers.V1
 
         //using ActionResult you define the return type which in this case is EstateDTO
         public async Task<ActionResult<APIResponse>> GetEstates([FromQuery(Name ="filterOccupancy")]int? occupancy,
-            [FromQuery] string? search)
+            [FromQuery] string? search, int pageSize = 2, int pageNumber = 1)
         {
             try
             {
@@ -45,7 +45,7 @@ namespace MagicEsatate_WebApi.Controllers.V1
                 IEnumerable<Estate> estateList;
                 if(occupancy > 0)
                 {
-                    estateList = await _dbEstate.GetAllAsync(u=>u.Occupancy == occupancy);
+                    estateList = await _dbEstate.GetAllAsync(u=>u.Occupancy == occupancy, pageSize:pageSize, pageNumber: pageNumber );
                 }
                 else
                 {
